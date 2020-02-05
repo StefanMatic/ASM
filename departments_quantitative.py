@@ -38,7 +38,7 @@ def create_nodes(doc, name):
             networks_list.append(name)
             node_attributes[node] = 'MATF_RTI'
 
-        size_dict[node] = 0
+        size_dict[node] = 1
 
         key1 = row['Prezime'].title() + ', ' + row['Ime'][0].title() + '.'
         name_dict[key1] = node
@@ -110,7 +110,7 @@ def create_graph(tuples, papers):
         sizes = {}
         for name in node_names:
             sizes[name] = size_dict.get(name)
-        nx.draw_networkx_nodes(G, pos = pos, nodelist = node_names, node_color = color, node_size = [v * 7 + 10 for v in sizes.values()])
+        nx.draw_networkx_nodes(G, pos = pos, nodelist = node_names, node_color = color, node_size = [v * 7 for v in sizes.values()])
 
     edges = G.edges()
     weights = [G[u][v]['weight'] for u,v in edges]

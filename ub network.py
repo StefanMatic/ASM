@@ -1,5 +1,6 @@
 import pandas as pd
 import departments_quantitative
+import magazines
 
 authors = pd.ExcelFile('authors.xlsx')
 papers = pd.read_excel('papers.xlsx')
@@ -10,3 +11,5 @@ fon = pd.read_excel(authors, 'fakultet organizacionih nauka')
 
 departments_quantitative.create_graph([(matf, 'matf'), (etf, 'etf'), (fon, 'fon')], papers)
 departments_quantitative.analysis()
+
+magazines.create_graph(papers)
