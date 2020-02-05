@@ -2,6 +2,7 @@ import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
 authors = pd.ExcelFile('authors.xlsx')
 papers = pd.read_excel('papers.xlsx')
@@ -90,7 +91,7 @@ node_network_map = dict(zip(nodes, networks_list))
 
 nodes_by_color = {val: [node for node in G if color_map[node_network_map[node]] == val] for val in colors}
 
-pos = nx.spring_layout(G, k=5, iterations=50, scale = 5)
+pos = nx.spring_layout(G, k = 1, iterations = 50, scale = 5)
 
 angs = np.linspace(0, 2*np.pi, 1+len(colors))
 repos = []
@@ -121,7 +122,7 @@ for color, node_names in nodes_by_color.items():
     sizes = {}
     for name in node_names:
         sizes[name] = size_dict.get(name)
-    nx.draw_networkx_nodes(G, pos = pos, nodelist = node_names, node_color = color, node_size = [v * 20 + 10 for v in sizes.values()])
+    nx.draw_networkx_nodes(G, pos = pos, nodelist = node_names, node_color = color, node_size = [v * 7 + 10 for v in sizes.values()])
 
 edges = G.edges()
 weights = [G[u][v]['weight'] for u,v in edges]
@@ -162,6 +163,15 @@ df = pd.DataFrame(closeness_centrality, columns= ['Autor', 'Centralnost po blisk
 df['Katedre'] = sorted_katedre
 df.to_excel(r'closeness_centrality.xlsx', index = None, header=True)
 
+clustering = [(k, v) for k, v in nx.clustering(G).items()]
+df = pd.DataFrame(clustering, columns= ['Autor', 'Faktor klasterizacije'])
+df['Katedre'] = katedre.values()
+df.to_excel(r'clustering.xlsx', index = None, header=True)
+
+print(nx.average_degree_connectivity(G))
+print(nx.average_neighbor_degree(G))
+
+
 nx.draw_networkx_edges(G, pos = pos, edge_color = 'darkslategrey', width = weights)
-nx.draw_networkx_labels(G, pos = pos, font_size = 7,font_family = 'sans-serif')
+# nx.draw_networkx_labels(G, pos = pos, font_size = 7,font_family = 'sans-serif')
 plt.show()
