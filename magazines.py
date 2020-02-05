@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 magazines = []
 magazine_authors = {}
 sizes = {}
+ub_authors = {}
 
 G = nx.Graph()
 def create_nodes(doc):
@@ -27,7 +28,7 @@ def create_edges(doc):
             split_authors = row['Autori'].split(' and ')
 
             for author in split_authors:
-                if row['Ime dokumenta'] in magazine_authors:
+                if author in ub_authors and row['Ime dokumenta'] in magazine_authors:
                     magazine_authors[row['Ime dokumenta']].add(author)
 
 
@@ -42,7 +43,10 @@ def create_edges(doc):
                         G.add_edge(magazines[i], magazines[j], weight=0.5)
 
 
-def create_graph(papers):
+def create_graph(papers, name_dict):
+    global ub_authors
+    ub_authors = name_dict
+
     create_nodes(papers)
     create_edges(papers)
 
