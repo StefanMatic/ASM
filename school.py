@@ -1,5 +1,8 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import community
+import matplotlib as mpl
+import numpy as np
 
 G = nx.Graph()
 name_dict = {}

@@ -1,6 +1,8 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
+import community
+import matplotlib as mpl
 
 G = nx.Graph()
 name_dict = {}
@@ -135,6 +137,20 @@ def create_graph(tuples, papers):
 
     nx.draw_networkx_edges(G, pos = pos, edge_color = 'darkslategrey', width = weights)
     # nx.draw_networkx_labels(G, pos = pos, font_size = 7,font_family = 'sans-serif')
+    plt.show()
+
+    part = community.best_partition(G)
+    mod = community.modularity(part, G)
+
+    print("dept modularity = " + str(mod))
+
+    edges, weights = zip(*nx.get_edge_attributes(G, 'weight').items())
+    values = [part.get(node) for node in G.nodes()]
+    cmap = mpl.cm.Greys(np.linspace(0, 1, 20))
+    cmap = mpl.colors.ListedColormap(cmap[10:, :-1])
+    nx.draw_spring(G, cmap = plt.get_cmap('RdYlBu'), node_color = values, edgelist=edges, edge_color=weights, width = weights, edge_cmap=cmap, node_size = [v * 7 for v in sizes.values()], with_labels = False)
+    plt.show()
+    nx.draw_spring(G, cmap = plt.get_cmap('RdYlBu'), node_color = values, edgelist=edges, edge_color=weights, width = weights, edge_cmap=cmap, node_size = [v * 7 for v in sizes.values()], with_labels = True, font_size = 7,font_family = 'sans-serif')
     plt.show()
 
     return G, name_dict

@@ -1,6 +1,8 @@
-import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
+import community
+import matplotlib as mpl
+import numpy as np
 
 magazines = []
 magazine_authors = {}
@@ -58,7 +60,7 @@ def create_graph(papers, name_dict):
     edges = G.edges()
     weights = [G[u][v]['weight'] for u,v in edges]
 
-    colors = ['#88afc2', '#4991b3', '#1e759e', '#055378']
+    colors = ['#668796', '#366f8a', '#1d6080', '#055378']
     node_colors = []
     for node in G.nodes:
         if sizes[node] < 3:
@@ -71,8 +73,21 @@ def create_graph(papers, name_dict):
             node_colors.append(colors[3])
 
     nx.draw_networkx_nodes(G, pos = pos, node_color = node_colors, node_size = [v * 10 for v in sizes.values()])
-    nx.draw_networkx_edges(G, pos=pos, edge_color='darkslategrey', width=weights)
+    nx.draw_networkx_edges(G, pos = pos, edge_color = 'slategrey', width = weights)
     # nx.draw_networkx_labels(G, pos = pos, font_size = 7,font_family = 'sans-serif')
+    plt.show()
+
+
+    part = community.best_partition(G)
+    mod = community.modularity(part, G)
+
+    print("mag modularity = " + str(mod))
+
+    edges, weights = zip(*nx.get_edge_attributes(G, 'weight').items())
+    values = [part.get(node) for node in G.nodes()]
+    cmap = mpl.cm.Greys(np.linspace(0, 1, 20))
+    cmap = mpl.colors.ListedColormap(cmap[10:, :-1])
+    nx.draw_spring(G, cmap = plt.get_cmap('RdYlBu'), node_color = values, edgelist=edges, edge_color=weights, width = weights, edge_cmap=cmap, node_size = [v * 7 for v in sizes.values()], with_labels = False)
     plt.show()
 
     return G
