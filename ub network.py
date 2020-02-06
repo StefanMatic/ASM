@@ -23,9 +23,9 @@ fon_is_G = school.create_graph(fon, papers, 'teal', 'Katedra za informacione sis
 fon_si_G = school.create_graph(fon, papers, 'lightseagreen', 'Katedra za softversko inzenjerstvo')
 fon_it_G = school.create_graph(fon, papers, 'cadetblue', 'Katedra za informacione tehnologije')
 
-# util.analysis(dept_G, 'dept', True)
-# util.analysis(mag_G, 'mag', False)
-# util.analysis(etf_G, 'etf', False)
+util.analysis(dept_G, 'dept', True)
+util.analysis(mag_G, 'mag', False)
+util.analysis(etf_G, 'etf', False)
 util.analysis(matf_G, 'matf', False)
 util.analysis(fon_G, 'fon', True)
 util.analysis(fon_is_G, 'fon_is', False)

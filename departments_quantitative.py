@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import community
 import matplotlib as mpl
+import util
 
 G = nx.Graph()
 name_dict = {}
@@ -152,6 +153,16 @@ def create_graph(tuples, papers):
     plt.show()
     nx.draw_spring(G, cmap = plt.get_cmap('RdYlBu'), node_color = values, edgelist=edges, edge_color=weights, width = weights, edge_cmap=cmap, node_size = [v * 7 for v in sizes.values()], with_labels = True, font_size = 7,font_family = 'sans-serif')
     plt.show()
+
+    sizes = []
+    for n in G.nodes():
+        sizes.append(size_dict[n])
+
+    size_list = list(zip(G.nodes(), sizes))
+    util.create_excel(G, sorted(size_list, key=lambda x: x[1], reverse = True), "Ime", "Velicina", "dept_node_size.xlsx", True)
+
+    edges = G.edges()
+    util.create_excel(G, sorted(list(zip(edges, weights)), key = lambda x: x[1], reverse = True), "Veza", "Tezina", "dept_edge_weight.xlsx", False)
 
     return G, name_dict
 
