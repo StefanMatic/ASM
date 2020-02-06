@@ -38,9 +38,9 @@ def create_edges(doc):
             for author in magazine_authors[magazines[i]]:
                 if author in magazine_authors[magazines[j]]:
                     if G.has_edge(magazines[i], magazines[j]):
-                        G[magazines[i]][magazines[j]]['weight'] += 0.2
+                        G[magazines[i]][magazines[j]]['weight'] += 0.1
                     else:
-                        G.add_edge(magazines[i], magazines[j], weight=0.5)
+                        G.add_edge(magazines[i], magazines[j], weight=0.1)
 
 
 def create_graph(papers, name_dict):
@@ -60,3 +60,5 @@ def create_graph(papers, name_dict):
     nx.draw_networkx_edges(G, pos=pos, edge_color='darkslategrey', width=weights)
     #nx.draw_networkx_labels(G, pos = pos, font_size = 7,font_family = 'sans-serif')
     plt.show()
+
+    return G
