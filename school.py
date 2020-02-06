@@ -41,9 +41,11 @@ def create_edges(doc):
     for index, row in doc.drop_duplicates('Naslov').iterrows():
         split_authors = row['Autori'].split(' and ')
 
-        for author in split_authors:
-            if author in name_dict:
-                size_dict[name_dict.get(author)] += 1
+        # for author in split_authors:
+        #     if author in name_dict:
+        #         size_dict[name_dict.get(author)] += 1
+
+        authors = set()
 
         for i in range(0, len(split_authors) - 1):
             for j in range(i + 1, len(split_authors)):
@@ -51,11 +53,15 @@ def create_edges(doc):
                 auth2 = split_authors[j]
 
                 if auth1 in name_dict and auth2 in name_dict:
+                    authors.add(auth1)
+                    authors.add(auth2)
                     if G.has_edge(name_dict.get(auth1), name_dict.get(auth2)):
                         G[name_dict.get(auth1)][name_dict.get(auth2)]['weight'] += 0.1
                     else:
                         G.add_edge(name_dict.get(auth1), name_dict.get(auth2), weight = 0.1)
 
+        for a in authors:
+            size_dict[name_dict.get(a)] += 1
 
 def create_graph(school, papers, color, dept = False, flag = False):
     global G
@@ -69,6 +75,8 @@ def create_graph(school, papers, color, dept = False, flag = False):
     create_nodes(school, dept, flag)
     create_edges(papers)
 
+    isolates = list(nx.isolates(G))
+    G.remove_nodes_from(isolates)
 
     pos = nx.spring_layout(G, k = 1, iterations = 50, scale = 5)
     nx.draw_networkx_nodes(G, pos = pos, node_color = color, node_size = [v * 10 for v in size_dict.values()])

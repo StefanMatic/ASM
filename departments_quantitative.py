@@ -54,9 +54,11 @@ def create_edges(doc):
     for index, row in doc.drop_duplicates('Naslov').iterrows():
         split_authors = row['Autori'].split(' and ')
 
-        for author in split_authors:
-            if author in name_dict:
-                size_dict[name_dict.get(author)] += 1
+        # for author in split_authors:
+        #     if author in name_dict:
+        #         size_dict[name_dict.get(author)] += 1
+
+        authors = set()
 
         for i in range(0, len(split_authors) - 1):
             for j in range(i + 1, len(split_authors)):
@@ -64,16 +66,31 @@ def create_edges(doc):
                 auth2 = split_authors[j]
 
                 if auth1 in name_dict and auth2 in name_dict:
+                    authors.add(auth1)
+                    authors.add(auth2)
                     if G.has_edge(name_dict.get(auth1), name_dict.get(auth2)):
                         G[name_dict.get(auth1)][name_dict.get(auth2)]['weight'] += 0.1
                     else:
                         G.add_edge(name_dict.get(auth1), name_dict.get(auth2), weight = 0.1)
 
+        for a in authors:
+            size_dict[name_dict.get(a)] += 1
 
 def create_graph(tuples, papers):
     for t in tuples:
         create_nodes(t[0], t[1])
     create_edges(papers)
+
+    isolates = list(nx.isolates(G))
+    G.remove_nodes_from(isolates)
+
+    cnt = 0
+    for node in nodes:
+        if nodes[cnt] in isolates:
+            del nodes[cnt]
+            del networks_list[cnt]
+        else:
+            cnt += 1
 
     node_network_map = dict(zip(nodes, networks_list))
 
@@ -113,8 +130,6 @@ def create_graph(tuples, papers):
 
     edges = G.edges()
     weights = [G[u][v]['weight'] for u,v in edges]
-    print(type(weights))
-    print(type(weights[0]))
 
     nx.set_node_attributes(G, node_attributes, name = 'Katedre')
 

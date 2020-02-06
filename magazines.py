@@ -50,15 +50,29 @@ def create_graph(papers, name_dict):
     create_nodes(papers)
     create_edges(papers)
 
+    isolates = list(nx.isolates(G))
+    G.remove_nodes_from(isolates)
+
     pos = nx.spring_layout(G, k = 1, iterations = 50, scale = 5)
 
     edges = G.edges()
     weights = [G[u][v]['weight'] for u,v in edges]
 
+    colors = ['#88afc2', '#4991b3', '#1e759e', '#055378']
+    node_colors = []
+    for node in G.nodes:
+        if sizes[node] < 3:
+            node_colors.append(colors[0])
+        elif sizes[node] < 5:
+            node_colors.append(colors[1])
+        elif sizes[node] < 10:
+            node_colors.append(colors[2])
+        else:
+            node_colors.append(colors[3])
 
-    nx.draw_networkx_nodes(G, pos = pos, node_color = 'peru', node_size = [v * 10 for v in sizes.values()])
+    nx.draw_networkx_nodes(G, pos = pos, node_color = node_colors, node_size = [v * 10 for v in sizes.values()])
     nx.draw_networkx_edges(G, pos=pos, edge_color='darkslategrey', width=weights)
-    #nx.draw_networkx_labels(G, pos = pos, font_size = 7,font_family = 'sans-serif')
+    # nx.draw_networkx_labels(G, pos = pos, font_size = 7,font_family = 'sans-serif')
     plt.show()
 
     return G
