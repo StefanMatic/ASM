@@ -66,7 +66,7 @@ def create_edges(doc):
         for a in authors:
             size_dict[name_dict.get(a)] += 1
 
-def create_graph(school, papers, color, dept = False, flag = False):
+def create_graph(name, school, papers, color, dept = False, flag = False):
     global G
     global name_dict
     global size_dict
@@ -86,6 +86,12 @@ def create_graph(school, papers, color, dept = False, flag = False):
 
     edges = G.edges()
     weights = [G[u][v]['weight'] for u,v in edges]
+
+    edges_num = len(edges)
+    nodes_num = len(G.nodes())
+
+    print(name + " edges = " + str(edges_num))
+    print(name + " nodes = " + str(nodes_num))
 
     if node_attributes:
         nx.set_node_attributes(G, node_attributes, name='Katedre')
