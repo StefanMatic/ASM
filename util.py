@@ -18,9 +18,10 @@ def analysis(graph, prefix, flag):
     cnt = 0
     for c in nx.connected_components(graph):
         subG = nx.subgraph(graph, c)
+        print(type(subG))
         print(c)
         eccentricity = sorted(nx.eccentricity(subG).items(), key = lambda x: x[1], reverse = True)
-        create_excel(eccentricity, 'Ime', 'Ekscentricnost', prefix + '_comp' + str(cnt) + '_eccentricity.xlsx', flag)
+        create_excel(subG, eccentricity, 'Ime', 'Ekscentricnost', prefix + '_comp' + str(cnt) + '_eccentricity.xlsx', flag)
         print(prefix + " comp" + str(cnt) + " diameter = " + str(nx.diameter(subG)))
         print(prefix + " comp" + str(cnt) + " radius = " + str(nx.radius(subG)))
         print(prefix + " comp" + str(cnt) + " center = " + str(nx.center(subG)))
@@ -36,7 +37,7 @@ def analysis(graph, prefix, flag):
     create_excel(graph, average_neighbor_degree, 'Ime', 'Stepen suseda', prefix + '_average_neighbor_degree.xlsx', flag)
 
 
-def create_excel(G, data, first_col, second_col, file_name, flag):
+def create_excel(G, data, first_col, second_col, file_name, flag = True):
     if flag:
         departments = nx.get_node_attributes(G, 'Katedre')
         sorted_departments = []
