@@ -4,6 +4,7 @@ import departments_qualitative
 import magazines
 import school
 import util
+import conferences
 
 authors = pd.ExcelFile('authors.xlsx')
 papers = pd.read_excel('papers.xlsx')
@@ -17,6 +18,7 @@ dept_G, name_dict = departments_quantitative.create_graph([(matf, 'matf'), (etf,
 dept_qual_G = departments_qualitative.create_graph([(matf, 'matf'), (etf, 'etf'), (fon, 'fon')], papers)
 
 mag_G = magazines.create_graph(papers, name_dict)
+conf_G = conferences.create_graph(papers, name_dict)
 
 etf_G = school.create_graph('etf', etf, papers, 'crimson')
 matf_G = school.create_graph('matf', matf, papers, 'skyblue')
@@ -28,6 +30,7 @@ fon_it_G = school.create_graph('fon it', fon, papers, 'cadetblue', 'Katedra za i
 util.analysis(dept_G, 'dept', True)
 util.analysis(dept_qual_G, 'dept_qual', True)
 util.analysis(mag_G, 'mag', False)
+util.analysis(conf_G, 'conf', False)
 util.analysis(etf_G, 'etf', False)
 util.analysis(matf_G, 'matf', False)
 util.analysis(fon_G, 'fon', True)

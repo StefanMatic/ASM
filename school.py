@@ -8,6 +8,9 @@ G = nx.Graph()
 name_dict = {}
 size_dict = {}
 node_attributes = {}
+mag_cnt = 0
+conf_cnt = 0
+year_dict = {}
 
 def create_nodes(doc, dept, flag):
 
@@ -41,7 +44,10 @@ def create_nodes(doc, dept, flag):
 
 
 def create_edges(doc):
+    global mag_cnt
+    global conf_cnt
     for index, row in doc.drop_duplicates('Naslov').iterrows():
+        flag = False
         split_authors = row['Autori'].split(' and ')
 
         # for author in split_authors:
@@ -56,6 +62,7 @@ def create_edges(doc):
                 auth2 = split_authors[j]
 
                 if auth1 in name_dict and auth2 in name_dict:
+                    flag = True
                     authors.add(auth1)
                     authors.add(auth2)
                     if G.has_edge(name_dict.get(auth1), name_dict.get(auth2)):
@@ -66,14 +73,32 @@ def create_edges(doc):
         for a in authors:
             size_dict[name_dict.get(a)] += 1
 
+        if flag:
+            if row['Tip rada'] == 'Article':
+                mag_cnt += 1
+            elif row['Tip rada'] == 'Conference Paper':
+                conf_cnt += 1
+
+            if row['Godina'] in year_dict:
+                year_dict[row['Godina']] += 1
+            else:
+                year_dict[row['Godina']] = 1
+
+
 def create_graph(name, school, papers, color, dept = False, flag = False):
     global G
     global name_dict
     global size_dict
+    global year_dict
+    global mag_cnt
+    global conf_cnt
 
     G = nx.Graph()
     name_dict = {}
     size_dict = {}
+    year_dict = {}
+    mag_cnt = 0
+    conf_cnt = 0
 
     create_nodes(school, dept, flag)
     create_edges(papers)
@@ -92,6 +117,10 @@ def create_graph(name, school, papers, color, dept = False, flag = False):
 
     print(name + " edges = " + str(edges_num))
     print(name + " nodes = " + str(nodes_num))
+    print(name + " articles = " + str(mag_cnt))
+    print(name + " conference papers = " + str(conf_cnt))
+    print(name + " by year:")
+    print(year_dict)
 
     if node_attributes:
         nx.set_node_attributes(G, node_attributes, name='Katedre')

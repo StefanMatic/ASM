@@ -5,45 +5,45 @@ import matplotlib as mpl
 import numpy as np
 import util
 
-magazines = []
-magazine_authors = {}
+conferences = []
+conference_authors = {}
 sizes = {}
 ub_authors = {}
 
 G = nx.Graph()
 def create_nodes(doc):
     for index, row in doc.drop_duplicates('Naslov').iterrows():
-        if row['Tip rada'] == 'Article':
-            if row['Ime dokumenta'] in magazines:
+        if row['Tip rada'] == 'Conference Paper':
+            if row['Ime dokumenta'] in conferences:
                 sizes[row['Ime dokumenta']] += 1
             else:
                 G.add_node(row['Ime dokumenta'])
-                magazines.append(row['Ime dokumenta'])
+                conferences.append(row['Ime dokumenta'])
                 sizes[row['Ime dokumenta']] = 1
 
 
 def create_edges(doc):
-    for magazine in magazines:
-        magazine_authors.setdefault(magazine, set())
+    for conference in conferences:
+        conference_authors.setdefault(conference, set())
 
     for index, row in doc.drop_duplicates('Naslov').iterrows():
-        if row['Tip rada'] == 'Article':
+        if row['Tip rada'] == 'Conference Paper':
             split_authors = row['Autori'].split(' and ')
 
             for author in split_authors:
-                if author in ub_authors and row['Ime dokumenta'] in magazine_authors:
-                    magazine_authors[row['Ime dokumenta']].add(author)
+                if author in ub_authors and row['Ime dokumenta'] in conference_authors:
+                    conference_authors[row['Ime dokumenta']].add(author)
 
 
-    for i in range(0, len(magazines) - 1):
-        for j in range(i + 1, len(magazines)):
+    for i in range(0, len(conferences) - 1):
+        for j in range(i + 1, len(conferences)):
 
-            for author in magazine_authors[magazines[i]]:
-                if author in magazine_authors[magazines[j]]:
-                    if G.has_edge(magazines[i], magazines[j]):
-                        G[magazines[i]][magazines[j]]['weight'] += 0.1
+            for author in conference_authors[conferences[i]]:
+                if author in conference_authors[conferences[j]]:
+                    if G.has_edge(conferences[i], conferences[j]):
+                        G[conferences[i]][conferences[j]]['weight'] += 0.1
                     else:
-                        G.add_edge(magazines[i], magazines[j], weight=0.1)
+                        G.add_edge(conferences[i], conferences[j], weight=0.1)
 
 
 def create_graph(papers, name_dict):
@@ -78,29 +78,16 @@ def create_graph(papers, name_dict):
     # nx.draw_networkx_labels(G, pos = pos, font_size = 7,font_family = 'sans-serif')
     plt.show()
 
-
-    part = community.best_partition(G)
-    mod = community.modularity(part, G)
-
-    print("mag modularity = " + str(mod))
-
-    edges, weights = zip(*nx.get_edge_attributes(G, 'weight').items())
-    values = [part.get(node) for node in G.nodes()]
-    cmap = mpl.cm.Greys(np.linspace(0, 1, 20))
-    cmap = mpl.colors.ListedColormap(cmap[10:, :-1])
-    nx.draw_spring(G, cmap = plt.get_cmap('RdYlBu'), node_color = values, edgelist=edges, edge_color=weights, width = weights, edge_cmap=cmap, node_size = [v * 7 for v in sizes.values()], with_labels = False)
-    plt.show()
-
     sizes_final = []
     for n in G.nodes():
         sizes_final.append(sizes[n])
 
     size_list = list(zip(G.nodes(), sizes_final))
-    util.create_excel(G, sorted(size_list, key=lambda x: x[1], reverse=True), "Ime", "Velicina", "mag_node_size.xlsx",
+    util.create_excel(G, sorted(size_list, key=lambda x: x[1], reverse=True), "Ime", "Velicina", "conf_node_size.xlsx",
                       False)
 
     edges = G.edges()
     util.create_excel(G, sorted(list(zip(edges, weights)), key=lambda x: x[1], reverse=True), "Veza", "Tezina",
-                      "mag_edge_weight.xlsx", False)
+                      "conf_edge_weight.xlsx", False)
 
     return G
